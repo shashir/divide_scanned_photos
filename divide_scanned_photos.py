@@ -34,8 +34,8 @@ import tempfile
 # TODO(shashir): Expose some of these as flags.
 BLACK_WHITE_THRESHOLD_PERC = 90  # convert -threshold
 CONNECTED_COMPONENTS = 4  # convert -connected-components
-DESKEW = 40  # convert -deskew
-FUZZ = 10  # convert -fuzz
+DESKEW_PERC = 40  # convert -deskew
+FUZZ_PERC = 10  # convert -fuzz
 
 # Other constants
 # All images are required to have area >= this fraction of the
@@ -103,8 +103,8 @@ def crop_photo_region(input_path, region, output_path):
 def straighen_image(input_path, output_path):
   """Straighten a skewed input image and write to output."""
   cmd = (
-      f"convert {input_path} -deskew {DESKEW}% -fuzz {FUZZ}% -trim +repage "
-      f"{output_path}")
+      f"convert {input_path} -deskew {DESKEW_PERC}% -fuzz {FUZZ_PERC}% "
+      f"-trim +repage {output_path}")
   return run_command(cmd)
 
 
