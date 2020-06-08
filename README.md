@@ -17,5 +17,16 @@ Wrote image 1 to output_dir/1_image.png.
 Wrote image 2 to output_dir/2_image.png.
 ```
 
-If output_dir is not provided, the constituent images are written to the same
+If "output_dir" is not provided, the constituent images are written to the same
 directory as the input image.
+
+Example input:
+![Input](image.png)
+
+Example outputs:
+
+![Output 0](test_output/0_image.png)
+
+![Output 1](test_output/1_image.png)
+
+![Output 2](test_output/2_image.png)

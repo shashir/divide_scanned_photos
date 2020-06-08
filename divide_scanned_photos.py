@@ -26,7 +26,6 @@ import logging
 import os
 import subprocess
 import shutil
-import sys
 import tempfile
 
 
@@ -50,13 +49,13 @@ ConnectedComponent = collections.namedtuple(
 
 def run_command(cmd):
   """Run command and return stdout."""
-  logging.info(f"run: {cmd}")
+  logging.info("run: %s", cmd)
   process = subprocess.Popen(
       cmd.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = (x.decode("utf-8").strip() for x in process.communicate())
-  logging.info(f"stdout: {stdout}")
+  logging.info("stdout: %s", stdout)
   if stderr:
-    logging.warning(f"stderr: {stderr}")
+    logging.warning("stderr: %s", stderr)
   assert process.returncode == 0, f"Command: '{cmd}' failed with '{stderr}'."
   return stdout
 
@@ -83,8 +82,8 @@ def get_photo_regions(input_path):
           component.mean_color.startswith("srgba(0,0,0")):
         max_area = max(max_area, component.area)
         components.append(component)
-  logging.info(f"Found {len(components)} total connected components.")
-        
+  logging.info("Found %d total connected components.", len(components))
+
   # Filter out small connected components.
   filtered_components = list()
   for component in components:
@@ -120,9 +119,25 @@ def divide_crop_and_straighten(input_path, output_dir):
       straighen_image(tmpfile.name, output_path)
       print(f"Wrote image {counter} to {output_path}.")
       counter += 1
- 
+
+
+def parse_args():
+  """Parses commandline args."""
+  parser = argparse.ArgumentParser()
+  parser.add_argument("input", type=str, help="Path to input image.")
+  parser.add_argument(
+      "output_dir", type=str, default="", nargs="?",
+      help=("Path to output directory. If empty, output images will be "
+            "written to the same directory as the input image."))
+  parser.add_argument(
+      "-log", "--log", type=str, default="warning",
+      choices=["warning", "info"],
+      help="Log level: warning, info")
+  return parser.parse_args()
+
 
 def main(args):
+  """Main run."""
   if args.log == "warning":
     logging.basicConfig(level=logging.WARNING)
   else:
@@ -135,16 +150,4 @@ def main(args):
 if __name__ == "__main__":
   assert shutil.which("convert"), (
       "Did not find `convert` tool in the path. Please install ImageMagick.")
-  parser = argparse.ArgumentParser()
-  parser.add_argument("input", type=str, help="Path to input image.")
-  parser.add_argument(
-      "output_dir", type=str, default="", nargs="?",
-      help=("Path to output directory. If empty, output images will be "
-            "written to the same directory as the input image."))
-  parser.add_argument(
-      "-log", "--log", type=str, default="warning",
-      choices=["warning", "info"],
-      help="Log level: warning, info")
-  main(parser.parse_args())
-
-
+  main(parse_args())
